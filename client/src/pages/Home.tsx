@@ -18,7 +18,7 @@ export default function Home() {
               <Brain className="w-6 h-6 text-black" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-[oklch(0.65_0.25_145)] via-[oklch(0.65_0.20_25)] to-[oklch(0.65_0.25_264)] bg-clip-text text-transparent">
-              {APP_TITLE}
+              BrainCode
             </h1>
           </div>
           <div className="flex items-center gap-4">

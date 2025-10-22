@@ -97,13 +97,13 @@ export type AppRouter = typeof appRouter;
 
 /**
  * Calculate VERDE, ROSSO, BLU scores from answers
+ * Logic: Start from 0, accumulate incremental scores, BLU = 36 - (VERDE + ROSSO)
  */
 async function calculateScores(answers: Array<{ exerciseNumber: number; answerData: any }>) {
-  let verde = 12; // Initial position
-  let rosso = 24; // Initial position
-  let blu = 0;
+  let verde = 0; // Start from 0
+  let rosso = 0; // Start from 0
 
-  // Process exercises 1-7
+  // Process exercises 1-7 (format: { plus: "1", minus: "2" })
   for (const answer of answers.filter(a => a.exerciseNumber <= 7)) {
     const scoringTable = await getScoringTable(answer.exerciseNumber);
     const combinationKey = formatCombinationKey(answer.answerData);
@@ -113,45 +113,43 @@ async function calculateScores(answers: Array<{ exerciseNumber: number; answerDa
       verde += scoring.verdeScore;
       rosso += scoring.rossoScore;
     }
+    // If not found, add 0 (no change)
   }
 
-  // Process exercises 8-10
+  // Process exercises 8-10 (format: ["28", "29", "30"])
   for (const answer of answers.filter(a => a.exerciseNumber >= 8 && a.exerciseNumber <= 10)) {
-    const affirmationScoringTable = await getAffirmationScoring(answer.exerciseNumber);
+    const scoringTable = await getScoringTable(answer.exerciseNumber);
     const selectedKey = formatAffirmationKey(answer.answerData);
     
-    const scoring = affirmationScoringTable.find(s => s.selectedAffirmations === selectedKey);
+    const scoring = scoringTable.find(s => s.combinationKey === selectedKey);
     if (scoring) {
-      verde += scoring.verdeAdjustment || 0;
-      rosso += scoring.rossoAdjustment || 0;
-      blu += scoring.bluAdjustment || 0;
+      verde += scoring.verdeScore;
+      rosso += scoring.rossoScore;
     }
+    // If combination not in table, add 0 (as per book instructions)
   }
 
-  // Calculate BLU if needed (might be derived from verde/rosso or separate)
-  // TODO: Verify the exact logic for BLU calculation from the book
-  if (blu === 0) {
-    blu = Math.max(0, 36 - Math.abs(verde - 12) - Math.abs(rosso - 24));
-  }
+  // Calculate BLU to ensure total = 36
+  const blu = 36 - (verde + rosso);
 
   return { verde, rosso, blu };
 }
 
 /**
  * Format combination key for exercises 1-7
- * Example: { 1: '+', 2: '-', 3: '' } => "1+2-3"
+ * Example: { plus: "2", minus: "1" } => "2+1-"
+ * Database format: "X+Y-" means option X with plus, option Y with minus
  */
-function formatCombinationKey(answerData: Record<string, string>): string {
-  const keys = Object.keys(answerData).sort();
-  return keys.map(k => `${k}${answerData[k]}`).join('');
+function formatCombinationKey(answerData: { plus: string; minus: string }): string {
+  return `${answerData.plus}+${answerData.minus}-`;
 }
 
 /**
  * Format affirmation key for exercises 8-10
- * Example: [34, 35, 37] => "34,35,37"
+ * Example: ["34", "35", "37"] => "34,35,37"
  */
-function formatAffirmationKey(answerData: number[]): string {
-  return answerData.sort((a, b) => a - b).join(',');
+function formatAffirmationKey(answerData: string[]): string {
+  return answerData.map(s => parseInt(s)).sort((a, b) => a - b).join(',');
 }
 
 /**

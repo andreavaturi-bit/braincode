@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Test from "./pages/Test";
 import Results from "./pages/Results";
 import Dashboard from "./pages/Dashboard";
+import { useEffect } from "react";
+import { APP_TITLE } from "./const";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -30,6 +32,11 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  // Set document title
+  useEffect(() => {
+    document.title = APP_TITLE;
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider

@@ -43,11 +43,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-block">
-            <div className="px-4 py-2 rounded-full bg-accent/50 border border-accent-foreground/20 text-sm font-medium mb-6">
-              Test di Profilazione Psicologica
-            </div>
-          </div>
+
           
           <h2 className="text-4xl md:text-6xl font-bold leading-tight">
             Decodifica il tuo{" "}

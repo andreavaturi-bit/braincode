@@ -156,8 +156,20 @@ async function calculateScores(answers: Array<{ exerciseNumber: number; answerDa
  * Example: { plus: "2", minus: "1" } => "2+1-"
  * Database format: "X+Y-" means option X with plus, option Y with minus
  */
-function formatCombinationKey(answerData: { plus: string; minus: string }): string {
-  return `${answerData.plus}+${answerData.minus}-`;
+function formatCombinationKey(answerData: any): string {
+  // Handle format: {"1": "-", "2": "+"}
+  let plus = '';
+  let minus = '';
+  
+  for (const [key, value] of Object.entries(answerData)) {
+    if (value === '+') {
+      plus = key;
+    } else if (value === '-') {
+      minus = key;
+    }
+  }
+  
+  return `${plus}+${minus}-`;
 }
 
 /**

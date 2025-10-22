@@ -15,8 +15,8 @@ import { toast } from "sonner";
 const exercises = [
   {
     number: 1,
-    title: "Comportamento in gruppo con estranei",
-    description: "Immaginate di trovarvi in un gruppo di persone che vi sono estranee. Come vi sentite? Qual è il comportamento per voi tipico in una situazione del genere?",
+    title: "ESERCIZIO 1",
+    description: "Immaginate di trovarvi in un gruppo di persone che vi sono estranee.\n\nCome vi sentite?\n\nQual è il comportamento per voi tipico in una situazione del genere?\n\nCercate di ricordare cosa avete provato in occasioni simili: ad esempio all'inizio di un corso, ad una riunione o a un ricevimento, ad un party o a un incontro privato, oppure entrando in un nuovo ambiente di lavoro.",
     type: "plusminus" as const,
     options: [
       { id: "1", text: "Tra estranei mi sento spesso a disagio, in un primo tempo preferisco restare in disparte." },
@@ -26,8 +26,8 @@ const exercises = [
   },
   {
     number: 2,
-    title: "Reazione alle contrarietà",
-    description: "Qual è la vostra maniera tipica di reagire alle contrarietà sul lavoro o nella vita privata?",
+    title: "ESERCIZIO 2",
+    description: "Non sempre le cose vanno come si vorrebbe.\n\nTalvolta ci si agita o ci si arrabbia.\n\nQual è la vostra maniera tipica di reagire alle contrarietà sul lavoro o nella vita privata?\n\nProprio nei momenti di difficoltà vengono a galla tratti della personalità che altrimenti rimarrebbero nascosti.\n\nNon si fa qui riferimento a casi eccezionali in cui tutti possono «perdere le staffe», ma piuttosto alle normali arrabbiature quotidiane che non sono facili da evitare.",
     type: "plusminus" as const,
     options: [
       { id: "4", text: "Quando mi arrabbio mi arrabbio sul serio e tendo a scaricare la tensione anche fisicamente." },
@@ -37,8 +37,8 @@ const exercises = [
   },
   {
     number: 3,
-    title: "Periodo della vita preferito",
-    description: "Quale di questi periodi della vita secondo voi è il più bello?",
+    title: "ESERCIZIO 3",
+    description: "Gli anni dell'infanzia, quindi quelli della giovinezza e quelli dell'età adulta:\n\ntre universi temporali completamente differenti.\n\nQuale di questi periodi della vita secondo voi è il più bello?",
     type: "plusminus" as const,
     options: [
       { id: "7", text: "Quello dell'infanzia è un periodo bellissimo, con le sue sicurezze e l'assenza di preoccupazioni. Mi trovo bene tra i bambini, e anch'essi si trovano bene con me." },
@@ -48,8 +48,8 @@ const exercises = [
   },
   {
     number: 4,
-    title: "Prima impressione",
-    description: "Come credete che gli altri vi vedano?",
+    title: "ESERCIZIO 4",
+    description: "Ogni persona è diversa dalle altre per il temperamento e per il modo di comportarsi.\n\nQueste differenze vengono percepite dalla gente come «prima impressione». Con una conoscenza più profonda vengono poi in luce altre qualità.\n\nConsideriamo l'effetto da voi prodotto ad una prima impressione.\n\nCome credete che gli altri vi vedano?",
     type: "plusminus" as const,
     options: [
       { id: "10", text: "Appaio simpatico e gioviale." },
@@ -59,8 +59,8 @@ const exercises = [
   },
   {
     number: 5,
-    title: "Rapporto con il tempo",
-    description: "Voi come vi comportate?",
+    title: "ESERCIZIO 5",
+    description: "Ogni persona ha il suo modo particolare di rapportarsi al tempo.\n\nVoi come vi comportate?",
     type: "plusminus" as const,
     options: [
       { id: "13", text: "Spesso perdo la cognizione del tempo, arrivo in ritardo agli appuntamenti e dimentico le scadenze." },
@@ -70,7 +70,7 @@ const exercises = [
   },
   {
     number: 6,
-    title: "Tempo libero",
+    title: "ESERCIZIO 6",
     description: "Come trascorrete il vostro tempo libero, quando non avete impegni e potete fare ciò che volete?",
     type: "plusminus" as const,
     options: [
@@ -81,7 +81,7 @@ const exercises = [
   },
   {
     number: 7,
-    title: "Importanza vitale",
+    title: "ESERCIZIO 7",
     description: "Dite quale, delle tre situazioni di seguito proposte, vi sembra abbia la maggiore importanza.",
     type: "plusminus" as const,
     options: [
@@ -92,27 +92,27 @@ const exercises = [
   },
   {
     number: 8,
-    title: "Affermazioni (22-27)",
-    description: "Scegliere le 3 affermazioni che si adattano di più al proprio comportamento.",
+    title: "ESERCIZIO 8",
+    description: "Leggete le sei affermazioni seguenti e scegliete quelle che vi riguardano.\n\nPotete scegliere tutte le affermazioni che ritenete appropriate, anche tutte e sei oppure nessuna.\n\nContrassegnate con una croce le affermazioni che vi riguardano.",
     type: "affirmations" as const,
     options: [
-      { id: "22", text: "Ho pochi 'peli sulla lingua', non sempre sono diplomatico." },
-      { id: "23", text: "Non riesco a comunicare bene i miei sentimenti e spesso vengo giudicato in maniera errata." },
-      { id: "24", text: "Mi interesso molto alle persone e alle loro condizioni di vita." },
-      { id: "25", text: "Amo il rischio e l'avventura. Il mio motto è: 'Chi non risica non rosica'." },
-      { id: "26", text: "Sono molto sensibile ai rumori, io stesso il più delle volte mi muovo silenziosamente." },
-      { id: "27", text: "Sono fondamentalmente un buongustaio, amo la buona cucina." },
+      { id: "22", text: "Sono una persona che preferisce stare in disparte." },
+      { id: "23", text: "Quando mi arrabbio, lo faccio notare." },
+      { id: "24", text: "Quando ho un problema, preferisco risolverlo da solo." },
+      { id: "25", text: "Sono una persona che si fa coinvolgere facilmente." },
+      { id: "26", text: "Sono una persona che non si lascia influenzare facilmente." },
+      { id: "27", text: "Preferisco evitare i conflitti." },
     ],
   },
   {
     number: 9,
-    title: "Affermazioni (28-33)",
-    description: "Scegliere le 3 affermazioni che si adattano di più al proprio comportamento.",
+    title: "ESERCIZIO 9",
+    description: "Leggete le sei affermazioni seguenti e scegliete quelle che vi riguardano.\n\nPotete scegliere tutte le affermazioni che ritenete appropriate, anche tutte e sei oppure nessuna.\n\nContrassegnate con una croce le affermazioni che vi riguardano.",
     type: "affirmations" as const,
     options: [
-      { id: "28", text: "Non amo i contrasti, sono comprensivo ed accomodante." },
-      { id: "29", text: "Sono un tipo risoluto, i tentennamenti non fanno per me." },
-      { id: "30", text: "Sono estremamente coscienzioso, spesso anche in cose di poco conto." },
+      { id: "28", text: "Sono una persona molto sensibile." },
+      { id: "29", text: "Sono una persona molto determinata." },
+      { id: "30", text: "Sono una persona molto razionale." },
       { id: "31", text: "Sovente mi rendo la vita difficile senza che ve ne sia bisogno; tendo a lambiccarmi il cervello e ad avere dei dubbi." },
       { id: "32", text: "Ingrasso facilmente, anche se mangio con moderazione." },
       { id: "33", text: "Devo fare molto movimento per sentirmi proprio bene." },
@@ -120,8 +120,8 @@ const exercises = [
   },
   {
     number: 10,
-    title: "Affermazioni (34-39)",
-    description: "Scegliere le 3 affermazioni che si adattano di più al proprio comportamento.",
+    title: "ESERCIZIO 10",
+    description: "Leggete le sei affermazioni seguenti e scegliete quelle che vi riguardano.\n\nPotete scegliere tutte le affermazioni che ritenete appropriate, anche tutte e sei oppure nessuna.\n\nContrassegnate con una croce le affermazioni che vi riguardano.",
     type: "affirmations" as const,
     options: [
       { id: "34", text: "Nella maggior parte delle occasioni preferisco assistere piuttosto che prendere parte attiva." },

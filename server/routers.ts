@@ -97,11 +97,14 @@ export type AppRouter = typeof appRouter;
 
 /**
  * Calculate VERDE, ROSSO, BLU scores from answers
- * Logic: Start from 0, accumulate incremental scores, BLU = 36 - (VERDE + ROSSO)
+ * Logic: Start from initial positions (VERDE=12, ROSSO=24, BLU=0), 
+ * accumulate incremental movements on circular disc, 
+ * final BLU = 36 - (final_VERDE + final_ROSSO)
  */
 async function calculateScores(answers: Array<{ exerciseNumber: number; answerData: any }>) {
-  let verde = 0; // Start from 0
-  let rosso = 0; // Start from 0
+  // Accumulate differentials (not absolute positions)
+  let verdeDifferential = 0;
+  let rossoDifferential = 0;
 
   // Process exercises 1-7 (format: { plus: "1", minus: "2" })
   for (const answer of answers.filter(a => a.exerciseNumber <= 7)) {
@@ -110,8 +113,8 @@ async function calculateScores(answers: Array<{ exerciseNumber: number; answerDa
     
     const scoring = scoringTable.find(s => s.combinationKey === combinationKey);
     if (scoring) {
-      verde += scoring.verdeScore;
-      rosso += scoring.rossoScore;
+      verdeDifferential += scoring.verdeScore;
+      rossoDifferential += scoring.rossoScore;
     }
     // If not found, add 0 (no change)
   }
@@ -123,16 +126,29 @@ async function calculateScores(answers: Array<{ exerciseNumber: number; answerDa
     
     const scoring = scoringTable.find(s => s.combinationKey === selectedKey);
     if (scoring) {
-      verde += scoring.verdeScore;
-      rosso += scoring.rossoScore;
+      verdeDifferential += scoring.verdeScore;
+      rossoDifferential += scoring.rossoScore;
     }
     // If combination not in table, add 0 (as per book instructions)
   }
 
-  // Calculate BLU to ensure total = 36
-  const blu = 36 - (verde + rosso);
-
-  return { verde, rosso, blu };
+  // Calculate final scores for the bar visualization
+  // Based on the book mechanism:
+  // - VERDE quantity = 12 + verde_differential (positions 1 to VERDE on bar)
+  // - ROSSO position on disc = 24 + rosso_differential
+  // - ROSSO quantity = ROSSO_position - VERDE_quantity (positions VERDE+1 to ROSSO_position)
+  // - BLU quantity = 36 - ROSSO_position (positions ROSSO_position+1 to 36)
+  
+  const verdeQuantity = 12 + verdeDifferential;
+  const rossoPosition = 24 + rossoDifferential;
+  const rossoQuantity = rossoPosition - verdeQuantity;
+  const bluQuantity = 36 - rossoPosition;
+  
+  return { 
+    verde: verdeQuantity, 
+    rosso: rossoQuantity, 
+    blu: bluQuantity 
+  };
 }
 
 /**

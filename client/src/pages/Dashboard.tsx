@@ -4,12 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Brain, Plus, Calendar, TrendingUp } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import AdminPanel from "@/components/AdminPanel";
 
 export default function Dashboard() {
   const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
   const [, navigate] = useLocation();
 
   const { data: results, isLoading } = trpc.test.myResults.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
+  const { data: isAdmin } = trpc.admin.isAdmin.useQuery(undefined, {
     enabled: isAuthenticated,
   });
 
@@ -85,6 +90,11 @@ export default function Dashboard() {
               </Button>
             </Link>
           </div>
+
+          {/* Admin Panel */}
+          {isAdmin && (
+            <AdminPanel />
+          )}
 
           {/* Stats Cards */}
           {results && results.length > 0 && (

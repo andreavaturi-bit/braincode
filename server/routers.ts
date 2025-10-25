@@ -6,11 +6,13 @@ import { z } from "zod";
 import { 
   getUserTestResults, 
   getTestResultWithAnswers,
+  getAllTestResults,
   saveTestResult,
   saveTestAnswers,
   getScoringTable,
   getAffirmationScoring
 } from "./db";
+import { isAdmin } from "./config/admins";
 import { nanoid } from "nanoid";
 
 export const appRouter = router({
@@ -90,6 +92,26 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await getTestResultWithAnswers(input.testResultId);
       }),
+  }),
+
+  admin: router({
+    /**
+     * Check if current user is admin
+     */
+    isAdmin: protectedProcedure.query(({ ctx }) => {
+      return isAdmin(ctx.user.email || undefined);
+    }),
+
+    /**
+     * Get all test results (admin only)
+     */
+    getAllResults: protectedProcedure.query(async ({ ctx }) => {
+      if (!isAdmin(ctx.user.email || undefined)) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+      
+      return await getAllTestResults();
+    }),
   }),
 });
 

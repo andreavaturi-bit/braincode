@@ -132,6 +132,32 @@ export async function getUserTestResults(userId: string) {
 }
 
 /**
+ * Get all test results (admin only)
+ */
+export async function getAllTestResults() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const results = await db
+    .select({
+      id: testResults.id,
+      userId: testResults.userId,
+      userName: users.name,
+      userEmail: users.email,
+      verdeScore: testResults.verdeScore,
+      rossoScore: testResults.rossoScore,
+      bluScore: testResults.bluScore,
+      profileType: testResults.profileType,
+      completedAt: testResults.completedAt,
+    })
+    .from(testResults)
+    .leftJoin(users, eq(testResults.userId, users.id))
+    .orderBy(desc(testResults.completedAt));
+
+  return results;
+}
+
+/**
  * Get a specific test result with its answers
  */
 export async function getTestResultWithAnswers(testResultId: string) {

@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Download, Share2, ArrowLeft } from "lucide-react";
+import { Brain, Download, Share2, ArrowLeft, FileText } from "lucide-react";
 import { Link, useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 
@@ -216,6 +216,12 @@ export default function Results() {
             <Link href="/test">
               <Button size="lg">
                 Rifai il Test
+              </Button>
+            </Link>
+            <Link href={`/test-details/${testResultId}`}>
+              <Button size="lg" variant="outline">
+                <FileText className="w-4 h-4 mr-2" />
+                Vedi Dettagli Risposte
               </Button>
             </Link>
             <Link href="/dashboard">

@@ -229,14 +229,6 @@ export default function Results() {
                 Vedi Tutti i Risultati
               </Button>
             </Link>
-            <Button size="lg" variant="outline" disabled>
-              <Download className="w-4 h-4 mr-2" />
-              Scarica PDF
-            </Button>
-            <Button size="lg" variant="outline" disabled>
-              <Share2 className="w-4 h-4 mr-2" />
-              Condividi
-            </Button>
           </div>
         </div>
       </main>

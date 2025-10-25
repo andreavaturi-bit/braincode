@@ -42,61 +42,62 @@ export default function TestDetails() {
   }
 
   // Testi delle domande per esercizi 1-7 (dal Google Form)
+  // IMPORTANTE: Gli ID delle opzioni sono globali, non locali per ogni esercizio!
   const exerciseQuestions = {
     1: {
       context: "Immaginate di trovarvi in un gruppo di persone che vi sono estranee. Come vi sentite? Qual è il comportamento per voi tipico in una situazione del genere?",
       options: [
-        "Tra estranei mi sento spesso a disagio, in un primo tempo preferisco restare in disparte.",
-        "In società mi trovo subito molto bene; anche con estranei stabilisco velocemente buoni contatti.",
-        "In un gruppo sono spesso quello che ha più 'voce in capitolo'; se c'è da prendere l'iniziativa tendo a gestire la situazione."
+        { id: "1", text: "Tra estranei mi sento spesso a disagio, in un primo tempo preferisco restare in disparte." },
+        { id: "2", text: "In società mi trovo subito molto bene; anche con estranei stabilisco velocemente buoni contatti." },
+        { id: "3", text: "In un gruppo sono spesso quello che ha più «voce in capitolo»; se c'è da prendere l'iniziativa tendo a gestire la situazione." }
       ]
     },
     2: {
       context: "Non sempre le cose vanno come si vorrebbe. Talvolta ci si agita o ci si arrabbia. Qual è la vostra maniera tipica di reagire alle contrarietà sul lavoro o nella vita privata?",
       options: [
-        "Quando mi arrabbio mi arrabbio sul serio e tendo a scaricare la tensione anche fisicamente.",
-        "Se qualcosa mi fa arrabbiare devo sfogarmi, mi piacerebbe parlare e dire tutto quello che mi passa per la mente.",
-        "Quando sono arrabbiato o agitato cerco di far finta di nulla, devo riuscire a venirne a capo da solo. Preferisco tirarmi in disparte."
+        { id: "4", text: "Quando mi arrabbio mi arrabbio sul serio e tendo a scaricare la tensione anche fisicamente." },
+        { id: "5", text: "Se qualcosa mi fa arrabbiare devo sfogarmi, mi piacerebbe parlare e dire tutto quello che mi passa per la mente." },
+        { id: "6", text: "Quando sono arrabbiato o agitato cerco di far finta di nulla, devo riuscire a venirne a capo da solo. Preferisco tirarmi in disparte." }
       ]
     },
     3: {
       context: "Gli anni dell'infanzia, quindi quelli della giovinezza e quelli dell'età adulta: tre universi temporali completamente differenti. Quale di questi periodi della vita secondo voi è il più bello?",
       options: [
-        "Quello dell'infanzia è un periodo bellissimo, con le sue sicurezze e l'assenza di preoccupazioni. Mi trovo bene tra i bambini, e anch'essi si trovano bene con me.",
-        "Sarebbe bello se la giovinezza, durante la quale si conquista il mondo, potesse durare il più a lungo possibile, poiché è il periodo in cui tutto si assapora meglio.",
-        "Con la maturità si acquista maggior distacco dalle cose, quindi si riesce a convivere meglio con se stessi e con il mondo circostante."
+        { id: "7", text: "Quello dell'infanzia è un periodo bellissimo, con le sue sicurezze e l'assenza di preoccupazioni. Mi trovo bene tra i bambini, e anch'essi si trovano bene con me." },
+        { id: "8", text: "Sarebbe bello se la giovinezza, durante la quale si conquista il mondo, potesse durare il più a lungo possibile, poiché è il periodo in cui tutto si assapora meglio." },
+        { id: "9", text: "Con la maturità si acquista maggior distacco dalle cose, quindi si riesce a convivere meglio con se stessi e con il mondo circostante." }
       ]
     },
     4: {
       context: "Ogni persona è diversa dalle altre per il temperamento e per il modo di comportarsi. Come credete che gli altri vi vedano?",
       options: [
-        "Appaio simpatico e gioviale.",
-        "Appaio vivace ed impulsivo.",
-        "Appaio taciturno e riservato."
+        { id: "10", text: "Appaio simpatico e gioviale." },
+        { id: "11", text: "Appaio vivace ed impulsivo." },
+        { id: "12", text: "Appaio taciturno e riservato." }
       ]
     },
     5: {
       context: "Ogni persona ha il suo modo particolare di rapportarsi al tempo. Voi come vi comportate?",
       options: [
-        "Spesso perdo la cognizione del tempo, arrivo in ritardo agli appuntamenti e dimentico le scadenze.",
-        "Mi capita spesso di rispettare le scadenze sul filo del rasoio e di presentarmi agli appuntamenti all'ultimo momento.",
-        "Mi dispiace arrivare in ritardo ad appuntamenti e scadenze, sicché, per prudenza, arrivo spesso in anticipo."
+        { id: "13", text: "Spesso perdo la cognizione del tempo, arrivo in ritardo agli appuntamenti e dimentico le scadenze." },
+        { id: "14", text: "Mi capita spesso di rispettare le scadenze sul filo del rasoio e di presentarmi agli appuntamenti all'ultimo momento." },
+        { id: "15", text: "Mi dispiace arrivare in ritardo ad appuntamenti e scadenze, sicché, per prudenza, arrivo spesso in anticipo." }
       ]
     },
     6: {
       context: "Come trascorrete il vostro tempo libero, quando non avete impegni e potete fare ciò che volete?",
       options: [
-        "Ciò che preferisco è dedicarmi indisturbato ai miei interessi personali.",
-        "Mi piace oziare oppure trascorrere il tempo in buona compagnia.",
-        "Devo sempre intraprendere qualcosa, non posso star fermo senza far nulla."
+        { id: "16", text: "Ciò che preferisco è dedicarmi indisturbato ai miei interessi personali." },
+        { id: "17", text: "Mi piace oziare oppure trascorrere il tempo in buona compagnia." },
+        { id: "18", text: "Devo sempre intraprendere qualcosa, non posso star fermo senza far nulla." }
       ]
     },
     7: {
       context: "Dite quale, delle tre situazioni di seguito proposte, vi sembra abbia la maggiore importanza.",
       options: [
-        "Essere rinchiuso, incatenato o addirittura immobilizzato in spazi angusti mi risulta davvero insopportabile. Per me la libertà di movimento è di vitale importanza.",
-        "Essere escluso dai contatti con il mondo esterno e abbandonato dalla gente mi risulta davvero insopportabile. Per me i contatti con la gente sono di vitale importanza.",
-        "Dover stare di continuo tra la gente senza mai potermi isolare mi risulta davvero insopportabile. La mia 'vita privata' è di vitale importanza."
+        { id: "19", text: "Essere rinchiuso, incatenato o addirittura immobilizzato in spazi angusti mi risulta davvero insopportabile. Per me la libertà di movimento è di vitale importanza." },
+        { id: "20", text: "Essere escluso dai contatti con il mondo esterno e abbandonato dalla gente mi risulta davvero insopportabile. Per me i contatti con la gente sono di vitale importanza." },
+        { id: "21", text: "Dover stare di continuo tra la gente senza mai potermi isolare mi risulta davvero insopportabile. La mia \"vita privata\" è di vitale importanza." }
       ]
     },
   };
@@ -135,14 +136,13 @@ export default function TestDetails() {
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground italic">{question.context}</p>
           <div className="space-y-2">
-            {question.options.map((option, idx) => {
-              const optionNum = (idx + 1).toString();
-              const isPlus = optionNum === plusOption;
-              const isMinus = optionNum === minusOption;
+            {question.options.map((option) => {
+              const isPlus = option.id === plusOption;
+              const isMinus = option.id === minusOption;
               
               return (
                 <div 
-                  key={idx}
+                  key={option.id}
                   className={`p-3 rounded-lg border ${
                     isPlus ? 'bg-green-500/10 border-green-500' : 
                     isMinus ? 'bg-red-500/10 border-red-500' : 
@@ -151,7 +151,7 @@ export default function TestDetails() {
                 >
                   <div className="flex items-center gap-2">
                     {(isPlus || isMinus) && <CheckCircle2 className="w-4 h-4" />}
-                    <span className="font-medium">{option}</span>
+                    <span className="font-medium">{option.text}</span>
                     {isPlus && <span className="ml-auto text-green-500 font-bold">+</span>}
                     {isMinus && <span className="ml-auto text-red-500 font-bold">-</span>}
                   </div>

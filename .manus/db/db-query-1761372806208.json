@@ -1,0 +1,35 @@
+{
+  "query": "SELECT tr.id, u.name as userName, tr.completedAt FROM testResults tr JOIN users u ON tr.userId = u.id ORDER BY tr.completedAt DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Sg1EebYzLo4GPU.d4beb38a9411 --database cBHNXCfx5hEiWnWWSJ3pSd --execute SELECT tr.id, u.name as userName, tr.completedAt FROM testResults tr JOIN users u ON tr.userId = u.id ORDER BY tr.completedAt DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "kQ160m2mA5eqrewjP4OM2",
+      "userName": "Chiara B.",
+      "completedAt": "2025-10-23 09:40:17"
+    },
+    {
+      "id": "YeLyaGTgFG5VVXJ4kMFs6",
+      "userName": "Andrea Vaturi",
+      "completedAt": "2025-10-22 15:50:46"
+    },
+    {
+      "id": "CiYLC4aJRLmvqLoulrp0F",
+      "userName": "Andrea Vaturi",
+      "completedAt": "2025-10-22 15:48:05"
+    },
+    {
+      "id": "WUy-eqlJVWxd1M8w2Db93",
+      "userName": "Andrea Vaturi",
+      "completedAt": "2025-10-22 15:44:46"
+    },
+    {
+      "id": "2ihd2gPs2FMe2pF5Ye16S",
+      "userName": "Andrea Vaturi",
+      "completedAt": "2025-10-22 15:27:23"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserName\tcompletedAt\nkQ160m2mA5eqrewjP4OM2\tChiara B.\t2025-10-23 09:40:17\nYeLyaGTgFG5VVXJ4kMFs6\tAndrea Vaturi\t2025-10-22 15:50:46\nCiYLC4aJRLmvqLoulrp0F\tAndrea Vaturi\t2025-10-22 15:48:05\nWUy-eqlJVWxd1M8w2Db93\tAndrea Vaturi\t2025-10-22 15:44:46\n2ihd2gPs2FMe2pF5Ye16S\tAndrea Vaturi\t2025-10-22 15:27:23\n",
+  "stderr": "",
+  "execution_time_ms": 123
+}

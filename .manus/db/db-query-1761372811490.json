@@ -1,0 +1,50 @@
+{
+  "query": "SELECT ta.exerciseNumber, ta.answerData FROM testAnswers ta JOIN testResults tr ON ta.testResultId = tr.id ORDER BY tr.completedAt DESC, ta.exerciseNumber ASC LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Sg1EebYzLo4GPU.d4beb38a9411 --database cBHNXCfx5hEiWnWWSJ3pSd --execute SELECT ta.exerciseNumber, ta.answerData FROM testAnswers ta JOIN testResults tr ON ta.testResultId = tr.id ORDER BY tr.completedAt DESC, ta.exerciseNumber ASC LIMIT 10",
+  "rows": [
+    {
+      "exerciseNumber": "1",
+      "answerData": "{\"1\": \"-\", \"2\": \"\", \"3\": \"+\"}"
+    },
+    {
+      "exerciseNumber": "2",
+      "answerData": "{\"4\": \"-\", \"6\": \"+\"}"
+    },
+    {
+      "exerciseNumber": "3",
+      "answerData": "{\"7\": \"-\", \"8\": \"+\"}"
+    },
+    {
+      "exerciseNumber": "4",
+      "answerData": "{\"11\": \"-\", \"12\": \"+\"}"
+    },
+    {
+      "exerciseNumber": "5",
+      "answerData": "{\"13\": \"-\", \"15\": \"+\"}"
+    },
+    {
+      "exerciseNumber": "6",
+      "answerData": "{\"16\": \"+\", \"18\": \"-\"}"
+    },
+    {
+      "exerciseNumber": "7",
+      "answerData": "{\"20\": \"-\", \"21\": \"+\"}"
+    },
+    {
+      "exerciseNumber": "8",
+      "answerData": "[\"24\", \"26\", \"27\"]"
+    },
+    {
+      "exerciseNumber": "9",
+      "answerData": "[\"28\", \"31\", \"30\"]"
+    },
+    {
+      "exerciseNumber": "10",
+      "answerData": "[\"36\", \"37\", \"39\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "exerciseNumber\tanswerData\n1\t{\"1\": \"-\", \"2\": \"\", \"3\": \"+\"}\n2\t{\"4\": \"-\", \"6\": \"+\"}\n3\t{\"7\": \"-\", \"8\": \"+\"}\n4\t{\"11\": \"-\", \"12\": \"+\"}\n5\t{\"13\": \"-\", \"15\": \"+\"}\n6\t{\"16\": \"+\", \"18\": \"-\"}\n7\t{\"20\": \"-\", \"21\": \"+\"}\n8\t[\"24\", \"26\", \"27\"]\n9\t[\"28\", \"31\", \"30\"]\n10\t[\"36\", \"37\", \"39\"]\n",
+  "stderr": "",
+  "execution_time_ms": 126
+}

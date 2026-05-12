@@ -6,11 +6,9 @@ import {
   testResults,
   testAnswers,
   scoringTables,
-  affirmationScoring,
   InsertTestResult,
   InsertTestAnswer,
-  InsertScoringTable,
-  InsertAffirmationScoring
+  InsertScoringTable
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -198,19 +196,6 @@ export async function getScoringTable(exerciseNumber: number) {
 }
 
 /**
- * Get affirmation scoring for a specific exercise
- */
-export async function getAffirmationScoring(exerciseNumber: number) {
-  const db = await getDb();
-  if (!db) return [];
-
-  return await db
-    .select()
-    .from(affirmationScoring)
-    .where(eq(affirmationScoring.exerciseNumber, exerciseNumber));
-}
-
-/**
  * Seed scoring tables (to be called during initialization)
  */
 export async function seedScoringTables(tables: InsertScoringTable[]) {
@@ -218,15 +203,5 @@ export async function seedScoringTables(tables: InsertScoringTable[]) {
   if (!db) throw new Error("Database not available");
 
   await db.insert(scoringTables).values(tables);
-}
-
-/**
- * Seed affirmation scoring (to be called during initialization)
- */
-export async function seedAffirmationScoring(scoring: InsertAffirmationScoring[]) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.insert(affirmationScoring).values(scoring);
 }
 

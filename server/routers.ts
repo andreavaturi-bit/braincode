@@ -10,10 +10,10 @@ import {
   saveTestResult,
   saveTestAnswers,
   getScoringTable,
-  getAffirmationScoring
 } from "./db";
 import { isAdmin } from "./config/admins";
 import { nanoid } from "nanoid";
+import { computeScores, determineProfile, type ScoringRow } from "./scoring";
 
 export const appRouter = router({
   system: systemRouter,
@@ -118,124 +118,28 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 
 /**
- * Calculate VERDE, ROSSO, BLU scores from answers
- * Logic: Start from initial positions (VERDE=12, ROSSO=24, BLU=0), 
- * accumulate incremental movements on circular disc, 
- * final BLU = 36 - (final_VERDE + final_ROSSO)
+ * Calcola i punteggi VERDE, ROSSO, BLU a partire dalle risposte di un test.
+ *
+ * Meccanica (dal libro Structogram IBSA):
+ * - Disco circolare con scala 0-36.
+ * - Indice verde (boundary verde/rosso) parte da 12.
+ * - Indice rosso (boundary rosso/blu) parte da 24.
+ * - I tre settori iniziali sono ampi 12 unità ciascuno.
+ * - Per ogni esercizio si legge il differenziale (+1, 0, -1, +2, -2) per
+ *   ciascun indice dalla tabella di scoring. + = orario, - = antiorario.
+ *
+ * Output: ampiezze finali dei tre settori (la somma è sempre 36).
+ *
+ * In caso di risposte estreme (mai osservate in pratica) gli indici potrebbero
+ * uscire dal range [0, 36]: in quel caso i valori vengono clampati per evitare
+ * settori negativi nel grafico finale.
  */
 async function calculateScores(answers: Array<{ exerciseNumber: number; answerData: any }>) {
-  // Accumulate differentials (not absolute positions)
-  let verdeDifferential = 0;
-  let rossoDifferential = 0;
-
-  // Process exercises 1-7 (format: { plus: "1", minus: "2" })
-  for (const answer of answers.filter(a => a.exerciseNumber <= 7)) {
-    const scoringTable = await getScoringTable(answer.exerciseNumber);
-    const combinationKey = formatCombinationKey(answer.answerData);
-    
-    const scoring = scoringTable.find(s => s.combinationKey === combinationKey);
-    if (scoring) {
-      verdeDifferential += scoring.verdeScore;
-      rossoDifferential += scoring.rossoScore;
-    }
-    // If not found, add 0 (no change)
+  const tables = new Map<number, ScoringRow[]>();
+  for (let ex = 1; ex <= 10; ex++) {
+    tables.set(ex, await getScoringTable(ex));
   }
-
-  // Process exercises 8-10 (format: ["28", "29", "30"])
-  for (const answer of answers.filter(a => a.exerciseNumber >= 8 && a.exerciseNumber <= 10)) {
-    const scoringTable = await getScoringTable(answer.exerciseNumber);
-    const selectedKey = formatAffirmationKey(answer.answerData);
-    
-    const scoring = scoringTable.find(s => s.combinationKey === selectedKey);
-    if (scoring) {
-      verdeDifferential += scoring.verdeScore;
-      rossoDifferential += scoring.rossoScore;
-    }
-    // If combination not in table, add 0 (as per book instructions)
-  }
-
-  // Calculate final scores for the bar visualization
-  // Based on the book mechanism:
-  // - VERDE quantity = 12 + verde_differential (positions 1 to VERDE on bar)
-  // - ROSSO position on disc = 24 + rosso_differential
-  // - ROSSO quantity = ROSSO_position - VERDE_quantity (positions VERDE+1 to ROSSO_position)
-  // - BLU quantity = 36 - ROSSO_position (positions ROSSO_position+1 to 36)
-  
-  const verdeQuantity = 12 + verdeDifferential;
-  const rossoPosition = 24 + rossoDifferential;
-  const rossoQuantity = rossoPosition - verdeQuantity;
-  const bluQuantity = 36 - rossoPosition;
-  
-  return { 
-    verde: verdeQuantity, 
-    rosso: rossoQuantity, 
-    blu: bluQuantity 
-  };
-}
-
-/**
- * Format combination key for exercises 1-7
- * Example: { plus: "2", minus: "1" } => "2+1-"
- * Database format: "X+Y-" means option X with plus, option Y with minus
- */
-function formatCombinationKey(answerData: any): string {
-  // Handle format: {"1": "-", "2": "+"}
-  let plus = '';
-  let minus = '';
-  
-  for (const [key, value] of Object.entries(answerData)) {
-    if (value === '+') {
-      plus = key;
-    } else if (value === '-') {
-      minus = key;
-    }
-  }
-  
-  return `${plus}+${minus}-`;
-}
-
-/**
- * Format affirmation key for exercises 8-10
- * Example: ["34", "35", "37"] => "34,35,37"
- */
-function formatAffirmationKey(answerData: string[]): string {
-  return answerData.map(s => parseInt(s)).sort((a, b) => a - b).join(',');
-}
-
-/**
- * Determine profile type based on scores
- */
-function determineProfile(verde: number, rosso: number, blu: number): string {
-  const total = verde + rosso + blu;
-  const verdePercent = (verde / total) * 100;
-  const rossoPercent = (rosso / total) * 100;
-  const bluPercent = (blu / total) * 100;
-
-  // Determine dominant component
-  const max = Math.max(verdePercent, rossoPercent, bluPercent);
-  
-  if (max === verdePercent) {
-    if (rossoPercent > bluPercent && rossoPercent > 25) {
-      return "Dominante VERDE con seconda componente ROSSO";
-    } else if (bluPercent > rossoPercent && bluPercent > 25) {
-      return "Dominante VERDE con seconda componente BLU";
-    }
-    return "Dominante VERDE";
-  } else if (max === rossoPercent) {
-    if (verdePercent > bluPercent && verdePercent > 25) {
-      return "Dominante ROSSO con seconda componente VERDE";
-    } else if (bluPercent > verdePercent && bluPercent > 25) {
-      return "Dominante ROSSO con seconda componente BLU";
-    }
-    return "Dominante ROSSO";
-  } else {
-    if (verdePercent > rossoPercent && verdePercent > 25) {
-      return "Dominante BLU con seconda componente VERDE";
-    } else if (rossoPercent > verdePercent && rossoPercent > 25) {
-      return "Dominante BLU con seconda componente ROSSO";
-    }
-    return "Dominante BLU";
-  }
+  return computeScores(answers, tables);
 }
 
 /**

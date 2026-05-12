@@ -17,7 +17,10 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Test results table - stores completed BrainCode tests with final scores
+ * Test results table - stores completed BrainCode tests with final scores.
+ *
+ * I tre punteggi rappresentano le ampiezze finali dei settori (scala 0-36)
+ * dopo l'applicazione di tutti i differenziali degli esercizi. La somma è 36.
  */
 export const testResults = mysqlTable("testResults", {
   id: varchar("id", { length: 64 }).primaryKey(),
@@ -36,7 +39,7 @@ export type TestResult = typeof testResults.$inferSelect;
 export type InsertTestResult = typeof testResults.$inferInsert;
 
 /**
- * Test answers table - stores detailed answers for each exercise
+ * Test answers table - stores detailed answers for each exercise.
  */
 export const testAnswers = mysqlTable("testAnswers", {
   id: varchar("id", { length: 64 }).primaryKey(),
@@ -52,8 +55,14 @@ export type TestAnswer = typeof testAnswers.$inferSelect;
 export type InsertTestAnswer = typeof testAnswers.$inferInsert;
 
 /**
- * Scoring tables for exercises 1-7
- * Stores the mapping from answer combinations to VERDE/ROSSO scores
+ * Scoring tables for ALL 10 exercises (1-7 and 8-10).
+ *
+ * - Esercizi 1-7: combinationKey nel formato "X+Y-" dove X è l'opzione
+ *   segnata con + e Y con -. 6 righe per esercizio.
+ * - Esercizi 8-10: combinationKey nel formato "A,B,C" con le tre affermazioni
+ *   scelte ordinate numericamente. 12 righe esplicite + 1 riga "0,0" per default.
+ *
+ * Popolato da `pnpm seed` (scripts/seed-all.ts).
  */
 export const scoringTables = mysqlTable("scoringTables", {
   id: varchar("id", { length: 64 }).primaryKey(),
@@ -67,22 +76,3 @@ export const scoringTables = mysqlTable("scoringTables", {
 
 export type ScoringTable = typeof scoringTables.$inferSelect;
 export type InsertScoringTable = typeof scoringTables.$inferInsert;
-
-/**
- * Affirmation scoring for exercises 8-10
- * Stores the lookup table for combinations of 3 affirmations
- */
-export const affirmationScoring = mysqlTable("affirmationScoring", {
-  id: varchar("id", { length: 64 }).primaryKey(),
-  exerciseNumber: int("exerciseNumber").notNull(),
-  selectedAffirmations: varchar("selectedAffirmations", { length: 30 }).notNull(),
-  verdeAdjustment: int("verdeAdjustment").default(0),
-  rossoAdjustment: int("rossoAdjustment").default(0),
-  bluAdjustment: int("bluAdjustment").default(0),
-}, (table) => ({
-  exerciseNumberIdx: index("exerciseNumber_idx").on(table.exerciseNumber),
-}));
-
-export type AffirmationScoring = typeof affirmationScoring.$inferSelect;
-export type InsertAffirmationScoring = typeof affirmationScoring.$inferInsert;
-

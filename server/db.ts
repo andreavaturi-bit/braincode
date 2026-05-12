@@ -6,9 +6,11 @@ import {
   testResults,
   testAnswers,
   scoringTables,
+  userNotifications,
   InsertTestResult,
   InsertTestAnswer,
-  InsertScoringTable
+  InsertScoringTable,
+  InsertUserNotification
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -203,5 +205,55 @@ export async function seedScoringTables(tables: InsertScoringTable[]) {
   if (!db) throw new Error("Database not available");
 
   await db.insert(scoringTables).values(tables);
+}
+
+/**
+ * Create a notification for a user
+ */
+export async function createUserNotification(notification: InsertUserNotification) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(userNotifications).values(notification);
+}
+
+/**
+ * Get all unread notifications for a user
+ */
+export async function getUserNotifications(userId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(userNotifications)
+    .where(eq(userNotifications.userId, userId))
+    .orderBy(desc(userNotifications.createdAt));
+}
+
+/**
+ * Mark a notification as read
+ */
+export async function markNotificationRead(notificationId: string, userId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(userNotifications)
+    .set({ read: true })
+    .where(eq(userNotifications.id, notificationId));
+}
+
+/**
+ * Mark all notifications as read for a user
+ */
+export async function markAllNotificationsRead(userId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(userNotifications)
+    .set({ read: true })
+    .where(eq(userNotifications.userId, userId));
 }
 

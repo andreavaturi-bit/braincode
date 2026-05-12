@@ -15,7 +15,13 @@
 
 ## Da fare manualmente dopo il deploy
 
-- [ ] Eseguire `pnpm seed` per ripopolare la tabella `scoringTables` in DB.
-- [ ] Eseguire `pnpm recalc-results --dry-run` per vedere quali test cambieranno.
-- [ ] Se i cambiamenti hanno senso, eseguire `pnpm recalc-results` senza --dry-run.
-- [ ] Eseguire `pnpm db:push` per applicare il drop della tabella `affirmationScoring`.
+- [x] Eseguire `pnpm seed` per ripopolare la tabella `scoringTables` in DB.
+- [x] Eseguire `pnpm recalc-results --dry-run` per vedere quali test cambieranno.
+- [x] Se i cambiamenti hanno senso, eseguire `pnpm recalc-results` senza --dry-run. (30 test aggiornati, 27 utenti notificati)
+- [x] Eseguire `pnpm db:push` per applicare il drop della tabella `affirmationScoring` e creazione tabella `userNotifications`.
+
+## Notifiche automatiche agli utenti (12 maggio 2026)
+
+- [x] Implementare notifica automatica agli utenti dopo il ricalcolo
+- [x] Notifica deve essere inviata solo agli utenti il cui risultato è cambiato
+- [x] Notifica deve essere in-app (o email) e non richiedere azione dall'utente

@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Plus, Calendar, TrendingUp } from "lucide-react";
+import { Brain, Plus, Calendar, TrendingUp, Bell, X, CheckCheck } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import AdminPanel from "@/components/AdminPanel";
@@ -9,6 +9,7 @@ import AdminPanel from "@/components/AdminPanel";
 export default function Dashboard() {
   const { user, isAuthenticated, loading: authLoading, logout } = useAuth();
   const [, navigate] = useLocation();
+  const utils = trpc.useUtils();
 
   const { data: results, isLoading } = trpc.test.myResults.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -16,6 +17,18 @@ export default function Dashboard() {
 
   const { data: isAdmin } = trpc.admin.isAdmin.useQuery(undefined, {
     enabled: isAuthenticated,
+  });
+
+  const { data: notifications } = trpc.notifications.getAll.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
+  const markReadMutation = trpc.notifications.markRead.useMutation({
+    onSuccess: () => utils.notifications.getAll.invalidate(),
+  });
+
+  const markAllReadMutation = trpc.notifications.markAllRead.useMutation({
+    onSuccess: () => utils.notifications.getAll.invalidate(),
   });
 
   const logoutMutation = trpc.auth.logout.useMutation({
@@ -46,6 +59,8 @@ export default function Dashboard() {
     logoutMutation.mutate();
   };
 
+  const unreadNotifications = notifications?.filter(n => !n.read) ?? [];
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
@@ -62,6 +77,14 @@ export default function Dashboard() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            {unreadNotifications.length > 0 && (
+              <div className="relative">
+                <Bell className="w-5 h-5 text-muted-foreground" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
+                  {unreadNotifications.length}
+                </span>
+              </div>
+            )}
             <div className="text-sm text-muted-foreground hidden md:block">
               {user?.name || user?.email}
             </div>
@@ -90,6 +113,48 @@ export default function Dashboard() {
               </Button>
             </Link>
           </div>
+
+          {/* Notification Banner */}
+          {unreadNotifications.length > 0 && (
+            <div className="space-y-3">
+              {unreadNotifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className="flex items-start gap-4 p-4 rounded-lg border border-amber-500/40 bg-amber-500/10"
+                >
+                  <Bell className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-amber-600 dark:text-amber-400">
+                      {notification.title}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {notification.message}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => markReadMutation.mutate({ notificationId: notification.id })}
+                    className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                    aria-label="Segna come letta"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              {unreadNotifications.length > 1 && (
+                <div className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => markAllReadMutation.mutate()}
+                    className="text-xs text-muted-foreground"
+                  >
+                    <CheckCheck className="w-3 h-3 mr-1" />
+                    Segna tutte come lette
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Admin Panel */}
           {isAdmin && (
@@ -256,4 +321,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

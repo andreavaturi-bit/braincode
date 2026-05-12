@@ -1,4 +1,4 @@
-import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, json, index } from "drizzle-orm/mysql-core";
+import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, json, index, boolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -76,3 +76,22 @@ export const scoringTables = mysqlTable("scoringTables", {
 
 export type ScoringTable = typeof scoringTables.$inferSelect;
 export type InsertScoringTable = typeof scoringTables.$inferInsert;
+
+/**
+ * Notifiche in-app per gli utenti.
+ * Usato per informare gli utenti quando il loro risultato viene corretto
+ * da un ricalcolo automatico lato server.
+ */
+export const userNotifications = mysqlTable("userNotifications", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  userId: varchar("userId", { length: 64 }).notNull().references(() => users.id),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  read: boolean("read").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("notification_userId_idx").on(table.userId),
+}));
+
+export type UserNotification = typeof userNotifications.$inferSelect;
+export type InsertUserNotification = typeof userNotifications.$inferInsert;

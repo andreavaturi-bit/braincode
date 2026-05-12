@@ -10,6 +10,9 @@ import {
   saveTestResult,
   saveTestAnswers,
   getScoringTable,
+  getUserNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
 } from "./db";
 import { isAdmin } from "./config/admins";
 import { nanoid } from "nanoid";
@@ -111,6 +114,33 @@ export const appRouter = router({
       }
       
       return await getAllTestResults();
+    }),
+  }),
+
+  notifications: router({
+    /**
+     * Get all notifications for the current user
+     */
+    getAll: protectedProcedure.query(async ({ ctx }) => {
+      return await getUserNotifications(ctx.user.id);
+    }),
+
+    /**
+     * Mark a specific notification as read
+     */
+    markRead: protectedProcedure
+      .input(z.object({ notificationId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        await markNotificationRead(input.notificationId, ctx.user.id);
+        return { success: true };
+      }),
+
+    /**
+     * Mark all notifications as read for the current user
+     */
+    markAllRead: protectedProcedure.mutation(async ({ ctx }) => {
+      await markAllNotificationsRead(ctx.user.id);
+      return { success: true };
     }),
   }),
 });

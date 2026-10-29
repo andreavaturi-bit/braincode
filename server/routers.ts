@@ -2,10 +2,12 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { 
   getUserTestResults, 
   getTestResultWithAnswers,
+  getTestResultById,
   getAllTestResults,
   saveTestResult,
   saveTestAnswers,
@@ -16,7 +18,9 @@ import {
 } from "./db";
 import { isAdmin } from "./config/admins";
 import { nanoid } from "nanoid";
-import { computeScores, determineProfile, type ScoringRow } from "./scoring";
+import { computeScores, determineProfile, getProfileDescription, type ScoringRow } from "./scoring";
+import { testSubmissionSchema } from "./test-submission";
+import { applyRecalculation, getRecalculationPreview } from "./recalculation";
 
 export const appRouter = router({
   system: systemRouter,
@@ -37,12 +41,7 @@ export const appRouter = router({
      * Submit a completed test and calculate the profile
      */
     submit: protectedProcedure
-      .input(z.object({
-        answers: z.array(z.object({
-          exerciseNumber: z.number().min(1).max(10),
-          answerData: z.any(),
-        })),
-      }))
+      .input(testSubmissionSchema)
       .mutation(async ({ ctx, input }) => {
         // Calculate scores based on answers
         const scores = await calculateScores(input.answers);
@@ -92,7 +91,18 @@ export const appRouter = router({
      */
     getResult: protectedProcedure
       .input(z.object({ testResultId: z.string() }))
-      .query(async ({ input }) => {
+      .query(async ({ ctx, input }) => {
+        const result = await getTestResultById(input.testResultId);
+        if (!result) return null;
+
+        const userIsAdmin = isAdmin(ctx.user.email || undefined);
+        if (result.userId !== ctx.user.id && !userIsAdmin) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Non autorizzato",
+          });
+        }
+
         return await getTestResultWithAnswers(input.testResultId);
       }),
   }),
@@ -109,12 +119,34 @@ export const appRouter = router({
      * Get all test results (admin only)
      */
     getAllResults: protectedProcedure.query(async ({ ctx }) => {
-      if (!isAdmin(ctx.user.email || undefined)) {
-        throw new Error('Unauthorized: Admin access required');
-      }
+      assertAdmin(ctx.user.email || undefined);
       
       return await getAllTestResults();
     }),
+
+    /** Genera un'anteprima del ricalcolo senza scrivere risultati o notifiche. */
+    recalculatePreview: protectedProcedure.query(async ({ ctx }) => {
+      assertAdmin(ctx.user.email || undefined);
+      return await getRecalculationPreview();
+    }),
+
+    /** Applica esclusivamente l'anteprima confermata dall'amministratore. */
+    recalculateApply: protectedProcedure
+      .input(z.object({ previewHash: z.string().min(1) }))
+      .mutation(async ({ ctx, input }) => {
+        assertAdmin(ctx.user.email || undefined);
+        try {
+          return await applyRecalculation(input.previewHash);
+        } catch (error) {
+          if (error instanceof Error && error.name === "RecalculationConflictError") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: error.message,
+            });
+          }
+          throw error;
+        }
+      }),
   }),
 
   notifications: router({
@@ -164,7 +196,7 @@ export type AppRouter = typeof appRouter;
  * uscire dal range [0, 36]: in quel caso i valori vengono clampati per evitare
  * settori negativi nel grafico finale.
  */
-async function calculateScores(answers: Array<{ exerciseNumber: number; answerData: any }>) {
+async function calculateScores(answers: Array<{ exerciseNumber: number; answerData: unknown }>) {
   const tables = new Map<number, ScoringRow[]>();
   for (let ex = 1; ex <= 10; ex++) {
     tables.set(ex, await getScoringTable(ex));
@@ -172,22 +204,11 @@ async function calculateScores(answers: Array<{ exerciseNumber: number; answerDa
   return computeScores(answers, tables);
 }
 
-/**
- * Get profile description based on profile type
- */
-function getProfileDescription(profileType: string): string {
-  const descriptions: Record<string, string> = {
-    "Dominante VERDE": "Persona sociale, armoniosa e orientata alle relazioni. Eccellente nelle relazioni interpersonali con capacità di mediazione e costruzione del consenso.",
-    "Dominante ROSSO": "Persona dinamica, impulsiva e orientata all'azione. Desiderio di dominio e superiorità con tendenza alla competizione e autorità innata.",
-    "Dominante BLU": "Persona riflessiva, sistematica e orientata alla pianificazione. Pensiero sistematico e categorico con tendenza all'astrazione e precisione.",
-    "Dominante VERDE con seconda componente ROSSO": "La componente VERDE sociale si combina con il dinamismo della componente ROSSO, creando un profilo equilibrato tra relazioni e azione.",
-    "Dominante VERDE con seconda componente BLU": "La componente VERDE sociale si unisce alla riflessività della componente BLU, creando un profilo empatico e sistematico.",
-    "Dominante ROSSO con seconda componente VERDE": "La componente ROSSO diviene più conciliante grazie alla componente VERDE. Può fare leva sul dinamismo disponendo della capacità di tirare le persone dalla propria parte.",
-    "Dominante ROSSO con seconda componente BLU": "L'impulsività e la forza di volontà si uniscono alla capacità di porsi obiettivi a lungo termine e di perseguirli con tenacia grazie alla componente BLU.",
-    "Dominante BLU con seconda componente VERDE": "La riservatezza e la pianificazione della componente BLU si combinano con la capacità relazionale della componente VERDE.",
-    "Dominante BLU con seconda componente ROSSO": "La sistematicità e la pianificazione della componente BLU si uniscono all'energia e alla capacità di azione della componente ROSSO.",
-  };
-
-  return descriptions[profileType] || "Profilo unico con caratteristiche equilibrate tra le tre componenti.";
+function assertAdmin(email: string | undefined) {
+  if (!isAdmin(email)) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Non autorizzato",
+    });
+  }
 }
-

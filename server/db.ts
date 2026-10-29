@@ -158,6 +158,23 @@ export async function getAllTestResults() {
 }
 
 /**
+ * Get a test result without its detailed answers.
+ * Used to authorize access before loading personal answer data.
+ */
+export async function getTestResultById(testResultId: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(testResults)
+    .where(eq(testResults.id, testResultId))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+/**
  * Get a specific test result with its answers
  */
 export async function getTestResultWithAnswers(testResultId: string) {
@@ -256,4 +273,3 @@ export async function markAllNotificationsRead(userId: string) {
     .set({ read: true })
     .where(eq(userNotifications.userId, userId));
 }
-

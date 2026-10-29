@@ -25,3 +25,9 @@
 - [x] Implementare notifica automatica agli utenti dopo il ricalcolo
 - [x] Notifica deve essere inviata solo agli utenti il cui risultato è cambiato
 - [x] Notifica deve essere in-app (o email) e non richiedere azione dall'utente
+
+## Pulizia tecnica (29 ottobre 2026)
+
+- [x] Rimossa la pagina dimostrativa `ComponentShowcase` non raggiungibile e i relativi componenti UI inutilizzati.
+- [x] Rimossi gli helper server non esposti dall'app: generazione immagini, trascrizione vocale, Data API, LLM e storage associato.
+- [x] Rimosse le dipendenze npm rimaste orfane dopo la pulizia.

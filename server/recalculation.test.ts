@@ -16,7 +16,7 @@ describe("buildRecalculationPlan", () => {
         verdeScore: 12,
         rossoScore: 12,
         bluScore: 12,
-        profileType: "Dominante VERDE",
+        profileType: "Ripartizione equilibrata",
         profileDescription: null,
       }],
       answersByResultId: new Map([["result-1", []]]),
@@ -34,8 +34,8 @@ describe("buildRecalculationPlan", () => {
       profileChanged: false,
       descriptionChanged: true,
       after: {
-        profileType: "Dominante VERDE",
-        profileDescription: "Persona sociale, armoniosa e orientata alle relazioni. Eccellente nelle relazioni interpersonali con capacità di mediazione e costruzione del consenso.",
+        profileType: "Ripartizione equilibrata",
+        profileDescription: "Le tre componenti hanno un peso simile: grande flessibilità e capacità di adattarsi a persone e situazioni diverse.",
       },
     });
   });

@@ -155,7 +155,7 @@ export default function Results() {
           {/* Profile Description */}
           <Card className="border-accent/30">
             <CardHeader>
-              <CardTitle className="text-2xl">{result.profileType}</CardTitle>
+              <CardTitle className="text-2xl break-words">{result.profileType}</CardTitle>
               <CardDescription>Il tuo profilo psicologico</CardDescription>
             </CardHeader>
             <CardContent>
@@ -242,4 +242,3 @@ export default function Results() {
     </div>
   );
 }
-

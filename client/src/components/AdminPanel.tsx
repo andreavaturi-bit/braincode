@@ -66,7 +66,7 @@ export default function AdminPanel() {
   };
 
   const exportToCSV = () => {
-    const headers = ["Nome", "Email", "Data Test", "Verde", "Rosso", "Blu", "Dominante"];
+    const headers = ["Nome", "Email", "Data Test", "Verde", "Rosso", "Blu", "Profilo"];
     const rows = results.map(r => [
       r.userName || "N/A",
       r.userEmail || "N/A",
@@ -207,7 +207,7 @@ export default function AdminPanel() {
                   <TableHead className="text-center">Verde</TableHead>
                   <TableHead className="text-center">Rosso</TableHead>
                   <TableHead className="text-center">Blu</TableHead>
-                  <TableHead>Dominante</TableHead>
+                  <TableHead>Profilo</TableHead>
                   <TableHead className="text-right">Azioni</TableHead>
                 </TableRow>
               </TableHeader>
@@ -229,7 +229,9 @@ export default function AdminPanel() {
                     <TableCell className="text-center font-bold text-red-600">{result.rossoScore}</TableCell>
                     <TableCell className="text-center font-bold text-blue-600">{result.bluScore}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={getProfileBadgeColor(result.profileType)}>{result.profileType}</Badge>
+                      <Badge variant="outline" className={`${getProfileBadgeColor(result.profileType)} whitespace-normal text-left leading-snug`}>
+                        {result.profileType}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Link href={`/test-details/${result.id}`}>

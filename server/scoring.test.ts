@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
   computeScores,
+  determineProfile,
   formatCombinationKey,
   formatAffirmationKey,
+  getProfileDescription,
   type ScoringRow,
 } from "./scoring";
 
@@ -101,6 +103,39 @@ describe("formatAffirmationKey", () => {
     expect(formatAffirmationKey(["22", "24"])).toBe("");
     expect(formatAffirmationKey(["22", "24", "27", "29"])).toBe("");
     expect(formatAffirmationKey(["a", "b", "c"])).toBe("");
+  });
+});
+
+describe("determineProfile", () => {
+  it("riconosce la doppia dominante VERDE/BLU quando i due punteggi di testa sono vicini", () => {
+    expect(determineProfile(15, 6, 15)).toBe("Doppia dominante VERDE/BLU");
+  });
+
+  it("riconosce la ripartizione equilibrata con punteggi identici", () => {
+    expect(determineProfile(12, 12, 12)).toBe("Ripartizione equilibrata");
+  });
+
+  it("riconosce la ripartizione equilibrata con una differenza massima di 3 punti", () => {
+    expect(determineProfile(13, 11, 12)).toBe("Ripartizione equilibrata");
+  });
+
+  it("mantiene la dominante con seconda componente quando non si applicano le nuove regole", () => {
+    expect(determineProfile(20, 10, 6)).toBe("Dominante VERDE con seconda componente ROSSO");
+  });
+
+  it("restituisce le nuove descrizioni letterali", () => {
+    expect(getProfileDescription("Doppia dominante VERDE/ROSSO")).toBe(
+      "Due forze quasi alla pari: il bisogno di relazione e armonia del VERDE convive con la spinta all'azione e all'affermazione del ROSSO."
+    );
+    expect(getProfileDescription("Doppia dominante VERDE/BLU")).toBe(
+      "Due forze quasi alla pari: la sensibilità relazionale del VERDE convive con la riflessività e la pianificazione del BLU."
+    );
+    expect(getProfileDescription("Doppia dominante ROSSO/BLU")).toBe(
+      "Due forze quasi alla pari: l'energia e la decisione del ROSSO convivono con la logica e la visione a lungo termine del BLU."
+    );
+    expect(getProfileDescription("Ripartizione equilibrata")).toBe(
+      "Le tre componenti hanno un peso simile: grande flessibilità e capacità di adattarsi a persone e situazioni diverse."
+    );
   });
 });
 

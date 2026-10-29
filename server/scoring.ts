@@ -85,6 +85,27 @@ export function computeScores(
 export function determineProfile(verde: number, rosso: number, blu: number): string {
   const total = verde + rosso + blu;
   if (total === 0) return "Profilo indeterminato";
+
+  const components = [
+    { name: "VERDE", score: verde, order: 0 },
+    { name: "ROSSO", score: rosso, order: 1 },
+    { name: "BLU", score: blu, order: 2 },
+  ].sort((a, b) => b.score - a.score || a.order - b.order);
+
+  // Una differenza massima di 3 punti fra tutte le componenti indica una
+  // distribuzione equilibrata, prima di qualunque altra classificazione.
+  if (components[0].score - components[2].score <= 3) {
+    return "Ripartizione equilibrata";
+  }
+
+  // Fuori dall'equilibrio, due punteggi di testa entro 2 punti definiscono
+  // una doppia dominante. L'ordinamento fisso preserva VERDE/ROSSO/BLU.
+  if (components[0].score - components[1].score <= 2) {
+    const doubleDominantColors = [components[0].name, components[1].name]
+      .sort((a, b) => ["VERDE", "ROSSO", "BLU"].indexOf(a) - ["VERDE", "ROSSO", "BLU"].indexOf(b));
+    return `Doppia dominante ${doubleDominantColors.join("/")}`;
+  }
+
   const verdePercent = (verde / total) * 100;
   const rossoPercent = (rosso / total) * 100;
   const bluPercent = (blu / total) * 100;
@@ -127,6 +148,10 @@ export function getProfileDescription(profileType: string): string {
     "Dominante ROSSO con seconda componente BLU": "L'impulsività e la forza di volontà si uniscono alla capacità di porsi obiettivi a lungo termine e di perseguirli con tenacia grazie alla componente BLU.",
     "Dominante BLU con seconda componente VERDE": "La riservatezza e la pianificazione della componente BLU si combinano con la capacità relazionale della componente VERDE.",
     "Dominante BLU con seconda componente ROSSO": "La sistematicità e la pianificazione della componente BLU si uniscono all'energia e alla capacità di azione della componente ROSSO.",
+    "Doppia dominante VERDE/ROSSO": "Due forze quasi alla pari: il bisogno di relazione e armonia del VERDE convive con la spinta all'azione e all'affermazione del ROSSO.",
+    "Doppia dominante VERDE/BLU": "Due forze quasi alla pari: la sensibilità relazionale del VERDE convive con la riflessività e la pianificazione del BLU.",
+    "Doppia dominante ROSSO/BLU": "Due forze quasi alla pari: l'energia e la decisione del ROSSO convivono con la logica e la visione a lungo termine del BLU.",
+    "Ripartizione equilibrata": "Le tre componenti hanno un peso simile: grande flessibilità e capacità di adattarsi a persone e situazioni diverse.",
   };
 
   return descriptions[profileType] || "Profilo unico con caratteristiche equilibrate tra le tre componenti.";

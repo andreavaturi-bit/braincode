@@ -103,9 +103,9 @@ export default function Results() {
           {/* Color Bar Visualization */}
           <Card className="border-accent/30">
             <CardHeader>
-              <CardTitle>La Tua Composizione Psicologica</CardTitle>
+              <CardTitle>La Tua Composizione</CardTitle>
               <CardDescription>
-                Distribuzione percentuale delle tre componenti del cervello
+                Il peso relativo dei tre colori nel tuo BrainCode
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -156,7 +156,7 @@ export default function Results() {
           <Card className="border-accent/30">
             <CardHeader>
               <CardTitle className="text-2xl break-words">{result.profileType}</CardTitle>
-              <CardDescription>Il tuo profilo psicologico</CardDescription>
+              <CardDescription>Il tuo stile BrainCode</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-base leading-relaxed">{result.profileDescription}</p>
@@ -172,7 +172,7 @@ export default function Results() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-sm text-muted-foreground leading-relaxed">
-                  La componente VERDE rappresenta l'aspetto sociale della tua personalità. 
+                  Il VERDE mette in evidenza il lato sociale e relazionale del tuo stile.
                   {verdePercent > 40 && " È la tua componente dominante, indicando una forte propensione alle relazioni interpersonali."}
                   {verdePercent > 25 && verdePercent <= 40 && " Ha un ruolo significativo nel tuo profilo."}
                   {verdePercent <= 25 && " Ha un ruolo secondario nel tuo profilo."}
@@ -187,7 +187,7 @@ export default function Results() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-sm text-muted-foreground leading-relaxed">
-                  La componente ROSSO rappresenta l'aspetto dinamico e orientato all'azione.
+                  Il ROSSO mette in evidenza un modo diretto e orientato all'azione.
                   {rossoPercent > 40 && " È la tua componente dominante, indicando una forte propensione all'azione e alla leadership."}
                   {rossoPercent > 25 && rossoPercent <= 40 && " Ha un ruolo significativo nel tuo profilo."}
                   {rossoPercent <= 25 && " Ha un ruolo secondario nel tuo profilo."}
@@ -202,7 +202,7 @@ export default function Results() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-sm text-muted-foreground leading-relaxed">
-                  La componente BLU rappresenta l'aspetto riflessivo e orientato alla pianificazione.
+                  Il BLU mette in evidenza un modo riflessivo e attento alla pianificazione.
                   {bluPercent > 40 && " È la tua componente dominante, indicando una forte propensione alla riflessione e alla pianificazione."}
                   {bluPercent > 25 && bluPercent <= 40 && " Ha un ruolo significativo nel tuo profilo."}
                   {bluPercent <= 25 && " Ha un ruolo secondario nel tuo profilo."}
@@ -236,7 +236,7 @@ export default function Results() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-auto">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2025 BrainCode. Basato sulla teoria del cervello tripartito di Paul MacLean.</p>
+          <p>© 2025 BrainCode</p>
         </div>
       </footer>
     </div>

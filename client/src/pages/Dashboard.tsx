@@ -222,7 +222,7 @@ export default function Dashboard() {
                   </div>
                   <h4 className="text-xl font-semibold mb-2">Nessun test completato</h4>
                   <p className="text-muted-foreground mb-6 max-w-md">
-                    Non hai ancora completato nessun test BrainCode. Inizia ora per scoprire il tuo profilo psicologico!
+                    Non hai ancora completato nessun test BrainCode. Inizia ora per scoprire come comunichi!
                   </p>
                   <Link href="/test">
                     <Button size="lg">
@@ -315,7 +315,7 @@ export default function Dashboard() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-auto">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2025 BrainCode. Basato sulla teoria del cervello tripartito di Paul MacLean.</p>
+          <p>© 2025 BrainCode</p>
         </div>
       </footer>
     </div>

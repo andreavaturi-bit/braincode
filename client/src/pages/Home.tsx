@@ -61,14 +61,14 @@ export default function Home() {
 
           
           <h2 className="text-4xl md:text-6xl font-bold leading-tight">
-            Decodifica il tuo{" "}
+            Scopri come{" "}
             <span className="bg-gradient-to-r from-[oklch(0.65_0.25_145)] via-[oklch(0.65_0.20_25)] to-[oklch(0.65_0.25_264)] bg-clip-text text-transparent">
-              cervello
+              comunichi
             </span>
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Scopri il tuo profilo psicologico attraverso un test scientifico basato sulla teoria del cervello tripartito di Paul MacLean.
+            Un percorso in dieci esercizi per osservare il tuo stile di comunicazione e relazione.
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-4">
@@ -99,7 +99,7 @@ export default function Home() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground mt-3">
-              Tre componenti, un profilo unico
+              Tre colori, il tuo stile
             </p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function Home() {
       <section className="container py-20 border-t border-border/40">
         <div className="max-w-6xl mx-auto">
           <h3 className="text-3xl font-bold text-center mb-12">
-            Le Tre Componenti del Cervello
+            Tre stili di comunicazione
           </h3>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -119,12 +119,11 @@ export default function Home() {
                   <Users className="w-6 h-6 text-[oklch(0.65_0.25_145)]" />
                 </div>
                 <CardTitle className="text-[oklch(0.65_0.25_145)]">VERDE</CardTitle>
-                <CardDescription>Componente Sociale</CardDescription>
+                <CardDescription>In ascolto e in relazione</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Rappresenta l'aspetto sociale, relazionale e armonioso della personalità. 
-                  Orientamento alle relazioni interpersonali e capacità di mediazione.
+                  Un modo di stare in contatto attento alle persone, all'armonia e alla mediazione.
                 </p>
               </CardContent>
             </Card>
@@ -135,12 +134,11 @@ export default function Home() {
                   <Zap className="w-6 h-6 text-[oklch(0.65_0.20_25)]" />
                 </div>
                 <CardTitle className="text-[oklch(0.65_0.20_25)]">ROSSO</CardTitle>
-                <CardDescription>Componente Dinamica</CardDescription>
+                <CardDescription>Diretto e concreto</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Rappresenta l'aspetto dinamico, impulsivo e orientato all'azione. 
-                  Competitività, leadership e capacità di agire nel presente.
+                  Un modo di esprimersi energico, immediato e orientato a trasformare le idee in azione.
                 </p>
               </CardContent>
             </Card>
@@ -151,12 +149,11 @@ export default function Home() {
                   <Target className="w-6 h-6 text-[oklch(0.65_0.25_264)]" />
                 </div>
                 <CardTitle className="text-[oklch(0.65_0.25_264)]">BLU</CardTitle>
-                <CardDescription>Componente Riflessiva</CardDescription>
+                <CardDescription>Riflessivo e organizzato</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Rappresenta l'aspetto riflessivo, sistematico e orientato alla pianificazione. 
-                  Pensiero strategico e attenzione ai dettagli.
+                  Un modo di comunicare più ragionato, attento ai dettagli e alla pianificazione.
                 </p>
               </CardContent>
             </Card>
@@ -176,7 +173,7 @@ export default function Home() {
               </div>
               <h4 className="font-semibold text-lg">Rispondi alle Domande</h4>
               <p className="text-sm text-muted-foreground">
-                10 esercizi progettati per analizzare il tuo comportamento tipico in diverse situazioni.
+                10 esercizi per osservare come ti esprimi nelle situazioni di ogni giorno.
               </p>
             </div>
 
@@ -184,9 +181,9 @@ export default function Home() {
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-lg">
                 2
               </div>
-              <h4 className="font-semibold text-lg">Calcolo Automatico</h4>
+              <h4 className="font-semibold text-lg">Il Tuo BrainCode</h4>
               <p className="text-sm text-muted-foreground">
-                Il sistema analizza le tue risposte e calcola i punteggi per le tre componenti.
+                Le tue scelte compongono la tua barra nei tre colori BrainCode.
               </p>
             </div>
 
@@ -194,9 +191,9 @@ export default function Home() {
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-lg">
                 3
               </div>
-              <h4 className="font-semibold text-lg">Scopri il Tuo Profilo</h4>
+              <h4 className="font-semibold text-lg">Scopri il Tuo Stile</h4>
               <p className="text-sm text-muted-foreground">
-                Ricevi il tuo profilo psicologico con descrizione dettagliata e visualizzazione grafica.
+                Trova una descrizione semplice del tuo stile e una visualizzazione grafica.
               </p>
             </div>
           </div>
@@ -206,9 +203,9 @@ export default function Home() {
       {/* CTA Section */}
       <section className="container py-20 border-t border-border/40">
         <div className="max-w-3xl mx-auto text-center space-y-6 p-12 rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 border border-accent-foreground/20">
-          <h3 className="text-3xl font-bold">Pronto a Scoprire il Tuo BrainCode?</h3>
+          <h3 className="text-3xl font-bold">Pronto a Scoprire Come Comunichi?</h3>
           <p className="text-lg text-muted-foreground">
-            Inizia ora il test e ottieni il tuo profilo psicologico personalizzato.
+            Inizia il percorso e scopri il tuo stile BrainCode.
           </p>
           {isAuthenticated ? (
             <Link href={testHref}>
@@ -227,7 +224,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-8 mt-auto">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2025 BrainCode. Basato sulla teoria del cervello tripartito di Paul MacLean.</p>
+          <p>© 2025 BrainCode</p>
         </div>
       </footer>
     </div>

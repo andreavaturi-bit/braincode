@@ -136,9 +136,10 @@ const exercises = [
 
 export default function Test() {
   const { user, isAuthenticated, loading } = useAuth();
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const [currentExercise, setCurrentExercise] = useState(0);
   const [answers, setAnswers] = useState<Record<number, any>>({});
+  const groupSlug = new URLSearchParams(location.split("?")[1] ?? "").get("gruppo") ?? undefined;
   
   const submitTest = trpc.test.submit.useMutation({
     onSuccess: (data) => {
@@ -199,7 +200,7 @@ export default function Test() {
       answerData,
     }));
 
-    submitTest.mutate({ answers: formattedAnswers });
+    submitTest.mutate({ answers: formattedAnswers, ...(groupSlug ? { groupSlug } : {}) });
   };
 
   const handlePlusMinusChange = (optionId: string, value: "+" | "-" | "") => {
@@ -268,6 +269,11 @@ export default function Test() {
         <div className="max-w-3xl mx-auto">
           <Card className="border-accent/30">
             <CardHeader>
+              {groupSlug && (
+                <div className="mb-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary">
+                  Al completamento, il tuo test verrà aggiunto al gruppo dell'invito.
+                </div>
+              )}
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                   {exercise.number}
@@ -373,4 +379,3 @@ export default function Test() {
     </div>
   );
 }
-

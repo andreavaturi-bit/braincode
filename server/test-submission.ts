@@ -114,6 +114,12 @@ export const testSubmissionSchema = z.object({
       }
     }
   }),
+  groupSlug: z.string()
+    .trim()
+    .min(1, "Il codice gruppo non è valido.")
+    .max(64, "Il codice gruppo non è valido.")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Il codice gruppo non è valido.")
+    .optional(),
 });
 
 export type TestSubmission = z.infer<typeof testSubmissionSchema>;

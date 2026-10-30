@@ -15,12 +15,16 @@ import {
   getUserNotifications,
   markNotificationRead,
   markAllNotificationsRead,
+  saveCompletedTest,
+  GroupNotFoundError,
 } from "./db";
 import { isAdmin } from "./config/admins";
 import { nanoid } from "nanoid";
 import { computeScores, determineProfile, getProfileDescription, type ScoringRow } from "./scoring";
 import { testSubmissionSchema } from "./test-submission";
 import { applyRecalculation, getRecalculationPreview } from "./recalculation";
+import { groupsRouter } from "./groups-router";
+import { normalizeGroupSlug } from "./groups";
 
 export const appRouter = router({
   system: systemRouter,
@@ -50,9 +54,8 @@ export const appRouter = router({
         const profileType = determineProfile(scores.verde, scores.rosso, scores.blu);
         const profileDescription = getProfileDescription(profileType);
 
-        // Save test result
         const testResultId = nanoid();
-        await saveTestResult({
+        const testResult = {
           id: testResultId,
           userId: ctx.user.id,
           verdeScore: scores.verde,
@@ -60,16 +63,31 @@ export const appRouter = router({
           bluScore: scores.blu,
           profileType,
           profileDescription,
-        });
-
-        // Save individual answers
-        const answersToSave = input.answers.map(answer => ({
+        };
+        const answersToSave = input.answers.map((answer) => ({
           id: nanoid(),
           testResultId,
           exerciseNumber: answer.exerciseNumber,
           answerData: answer.answerData,
         }));
-        await saveTestAnswers(answersToSave);
+
+        const normalizedGroupSlug = input.groupSlug ? normalizeGroupSlug(input.groupSlug) : null;
+        if (input.groupSlug && !normalizedGroupSlug) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Il codice gruppo non è valido." });
+        }
+
+        try {
+          await saveCompletedTest({
+            result: testResult,
+            answers: answersToSave,
+            groupSlug: normalizedGroupSlug ?? undefined,
+          });
+        } catch (error) {
+          if (error instanceof GroupNotFoundError) {
+            throw new TRPCError({ code: "NOT_FOUND", message: error.message });
+          }
+          throw error;
+        }
 
         return {
           testResultId,
@@ -147,6 +165,7 @@ export const appRouter = router({
           throw error;
         }
       }),
+    groups: groupsRouter,
   }),
 
   notifications: router({

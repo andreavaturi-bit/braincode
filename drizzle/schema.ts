@@ -1,4 +1,4 @@
-import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, json, index, boolean } from "drizzle-orm/mysql-core";
+import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, json, index, boolean, primaryKey, uniqueIndex } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -95,3 +95,38 @@ export const userNotifications = mysqlTable("userNotifications", {
 
 export type UserNotification = typeof userNotifications.$inferSelect;
 export type InsertUserNotification = typeof userNotifications.$inferInsert;
+
+/**
+ * Gruppi gestiti esclusivamente dagli amministratori.
+ * Lo slug è usato nel link di invito pubblico e resta stabile anche quando il
+ * nome visualizzato viene rinominato.
+ */
+export const groups = mysqlTable("groups", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  name: varchar("name", { length: 120 }).notNull(),
+  slug: varchar("slug", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  slugUnique: uniqueIndex("groups_slug_unique").on(table.slug),
+}));
+
+export type Group = typeof groups.$inferSelect;
+export type InsertGroup = typeof groups.$inferInsert;
+
+/**
+ * Una persona può appartenere a più gruppi. La chiave primaria composta
+ * impedisce automaticamente appartenenze duplicate, anche in caso di retry.
+ */
+export const groupMembers = mysqlTable("groupMembers", {
+  groupId: varchar("groupId", { length: 64 }).notNull().references(() => groups.id),
+  userId: varchar("userId", { length: 64 }).notNull().references(() => users.id),
+  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+}, (table) => ({
+  pk: primaryKey({ columns: [table.groupId, table.userId], name: "groupMembers_groupId_userId_pk" }),
+  groupIdIdx: index("groupMembers_groupId_idx").on(table.groupId),
+  userIdIdx: index("groupMembers_userId_idx").on(table.userId),
+}));
+
+export type GroupMember = typeof groupMembers.$inferSelect;
+export type InsertGroupMember = typeof groupMembers.$inferInsert;

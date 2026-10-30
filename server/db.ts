@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
@@ -7,12 +7,15 @@ import {
   testAnswers,
   scoringTables,
   userNotifications,
+  groups,
+  groupMembers,
   InsertTestResult,
   InsertTestAnswer,
   InsertScoringTable,
   InsertUserNotification
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import type { GroupResultForAnalytics } from "./groups";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -272,4 +275,190 @@ export async function markAllNotificationsRead(userId: string) {
     .update(userNotifications)
     .set({ read: true })
     .where(eq(userNotifications.userId, userId));
+}
+
+export class GroupNotFoundError extends Error {
+  constructor() {
+    super("Il link del gruppo non è più disponibile.");
+    this.name = "GroupNotFoundError";
+  }
+}
+
+/**
+ * Salva un completamento e, quando presente, l'appartenenza al gruppo invito
+ * nella stessa transazione. Un link non valido non salva alcun risultato.
+ */
+export async function saveCompletedTest({
+  result,
+  answers,
+  groupSlug,
+}: {
+  result: InsertTestResult;
+  answers: InsertTestAnswer[];
+  groupSlug?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.transaction(async (tx) => {
+    let groupId: string | undefined;
+    if (groupSlug) {
+      const group = await tx
+        .select({ id: groups.id })
+        .from(groups)
+        .where(eq(groups.slug, groupSlug))
+        .limit(1);
+      if (!group[0]) throw new GroupNotFoundError();
+      groupId = group[0].id;
+    }
+
+    await tx.insert(testResults).values(result);
+    await tx.insert(testAnswers).values(answers);
+
+    if (groupId) {
+      await tx
+        .insert(groupMembers)
+        .values({ groupId, userId: result.userId })
+        .onDuplicateKeyUpdate({ set: { groupId } });
+    }
+  });
+
+  return result;
+}
+
+export async function getGroupsWithMemberCounts() {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select({
+      id: groups.id,
+      name: groups.name,
+      slug: groups.slug,
+      createdAt: groups.createdAt,
+      memberCount: sql<number>`count(${groupMembers.userId})`,
+    })
+    .from(groups)
+    .leftJoin(groupMembers, eq(groups.id, groupMembers.groupId))
+    .groupBy(groups.id, groups.name, groups.slug, groups.createdAt)
+    .orderBy(asc(groups.name));
+}
+
+export async function getGroupById(groupId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(groups).where(eq(groups.id, groupId)).limit(1);
+  return result[0] ?? null;
+}
+
+export async function getGroupsByIds(groupIds: string[]) {
+  const requested = new Set(groupIds);
+  const allGroups = await getGroupsWithMemberCounts();
+  return allGroups.filter((group) => requested.has(group.id));
+}
+
+export async function createGroup(group: { id: string; name: string; slug: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(groups).values(group);
+  return group;
+}
+
+export async function renameGroup(groupId: string, name: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(groups).set({ name }).where(eq(groups.id, groupId));
+}
+
+/** Cancellare un gruppo rimuove soltanto le appartenenze, mai persone o risultati. */
+export async function deleteGroup(groupId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.transaction(async (tx) => {
+    await tx.delete(groupMembers).where(eq(groupMembers.groupId, groupId));
+    await tx.delete(groups).where(eq(groups.id, groupId));
+  });
+}
+
+export async function setUserGroups(userId: string, groupIds: string[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.transaction(async (tx) => {
+    await tx.delete(groupMembers).where(eq(groupMembers.userId, userId));
+    if (groupIds.length > 0) {
+      await tx.insert(groupMembers).values(groupIds.map((groupId) => ({ groupId, userId })));
+    }
+  });
+}
+
+export async function addUsersToGroup(groupId: string, userIds: string[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  if (userIds.length === 0) return;
+  await db
+    .insert(groupMembers)
+    .values(userIds.map((userId) => ({ groupId, userId })))
+    .onDuplicateKeyUpdate({ set: { groupId } });
+}
+
+export async function getUserGroupMemberships() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select({
+      userId: groupMembers.userId,
+      groupId: groups.id,
+      groupName: groups.name,
+      groupSlug: groups.slug,
+    })
+    .from(groupMembers)
+    .innerJoin(groups, eq(groupMembers.groupId, groups.id))
+    .orderBy(asc(groups.name));
+}
+
+export async function getGroupMembersWithLatestResults(groupId: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .select({
+      userId: users.id,
+      userName: users.name,
+      userEmail: users.email,
+      verdeScore: testResults.verdeScore,
+      rossoScore: testResults.rossoScore,
+      bluScore: testResults.bluScore,
+      profileType: testResults.profileType,
+      completedAt: testResults.completedAt,
+    })
+    .from(groupMembers)
+    .innerJoin(users, eq(groupMembers.userId, users.id))
+    .leftJoin(testResults, eq(users.id, testResults.userId))
+    .where(eq(groupMembers.groupId, groupId))
+    .orderBy(desc(testResults.completedAt));
+
+  const members = new Map<string, { userId: string; userName: string | null; userEmail: string | null; result: GroupResultForAnalytics | null }>();
+  for (const row of rows) {
+    if (!members.has(row.userId)) {
+      members.set(row.userId, {
+        userId: row.userId,
+        userName: row.userName,
+        userEmail: row.userEmail,
+        result: row.completedAt && row.profileType !== null && row.verdeScore !== null && row.rossoScore !== null && row.bluScore !== null
+          ? {
+              userId: row.userId,
+              userName: row.userName,
+              userEmail: row.userEmail,
+              completedAt: row.completedAt,
+              verdeScore: row.verdeScore,
+              rossoScore: row.rossoScore,
+              bluScore: row.bluScore,
+              profileType: row.profileType,
+            }
+          : null,
+      });
+    }
+  }
+
+  return Array.from(members.values());
 }

@@ -3,10 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Brain, Zap, Target, Users } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useEffect } from "react";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
+  const [location, navigate] = useLocation();
+  const groupSlug = new URLSearchParams(location.split("?")[1] ?? "").get("gruppo") ?? undefined;
+  const testHref = groupSlug ? `/test?gruppo=${encodeURIComponent(groupSlug)}` : "/test";
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const pendingGroupSlug = window.sessionStorage.getItem("braincode-pending-group");
+    if (!pendingGroupSlug) return;
+    window.sessionStorage.removeItem("braincode-pending-group");
+    navigate(`/test?gruppo=${encodeURIComponent(pendingGroupSlug)}`);
+  }, [isAuthenticated, navigate]);
+
+  const startLogin = () => {
+    if (groupSlug) window.sessionStorage.setItem("braincode-pending-group", groupSlug);
+    window.location.href = getLoginUrl();
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -27,14 +44,12 @@ export default function Home() {
                 <Link href="/dashboard">
                   <Button variant="ghost">I Miei Risultati</Button>
                 </Link>
-                <Link href="/test">
+                <Link href={testHref}>
                   <Button>Inizia il Test</Button>
                 </Link>
               </>
             ) : (
-              <a href={getLoginUrl()}>
-                <Button>Accedi con Google</Button>
-              </a>
+              <Button onClick={startLogin}>Accedi con Google</Button>
             )}
           </div>
         </div>
@@ -58,17 +73,15 @@ export default function Home() {
 
           <div className="flex items-center justify-center gap-4 pt-4">
             {isAuthenticated ? (
-              <Link href="/test">
+              <Link href={testHref}>
                 <Button size="lg" className="text-lg px-8">
                   Inizia il Test
                 </Button>
               </Link>
             ) : (
-              <a href={getLoginUrl()}>
-                <Button size="lg" className="text-lg px-8">
-                  Inizia Ora
-                </Button>
-              </a>
+              <Button size="lg" className="text-lg px-8" onClick={startLogin}>
+                Inizia Ora
+              </Button>
             )}
           </div>
 
@@ -198,17 +211,15 @@ export default function Home() {
             Inizia ora il test e ottieni il tuo profilo psicologico personalizzato.
           </p>
           {isAuthenticated ? (
-            <Link href="/test">
+            <Link href={testHref}>
               <Button size="lg" className="text-lg px-8">
                 Inizia il Test
               </Button>
             </Link>
           ) : (
-            <a href={getLoginUrl()}>
-              <Button size="lg" className="text-lg px-8">
-                Accedi e Inizia
-              </Button>
-            </a>
+            <Button size="lg" className="text-lg px-8" onClick={startLogin}>
+              Accedi e Inizia
+            </Button>
           )}
         </div>
       </section>
@@ -222,4 +233,3 @@ export default function Home() {
     </div>
   );
 }
-

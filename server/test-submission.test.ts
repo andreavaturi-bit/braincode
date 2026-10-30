@@ -30,6 +30,12 @@ describe("testSubmissionSchema", () => {
     expect(testSubmissionSchema.safeParse(validSubmission()).success).toBe(true);
   });
 
+  it("accetta uno slug gruppo sicuro e rifiuta codici manipolati", () => {
+    expect(testSubmissionSchema.safeParse({ ...validSubmission(), groupSlug: "cordua-2026" }).success).toBe(true);
+    expect(testSubmissionSchema.safeParse({ ...validSubmission(), groupSlug: "Cordua" }).success).toBe(false);
+    expect(testSubmissionSchema.safeParse({ ...validSubmission(), groupSlug: "cordua/altro" }).success).toBe(false);
+  });
+
   it("rifiuta esercizi mancanti o ripetuti", () => {
     const missingExercise = validSubmission();
     missingExercise.answers.pop();

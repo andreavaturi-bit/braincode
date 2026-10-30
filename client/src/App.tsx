@@ -9,6 +9,7 @@ import Test from "./pages/Test";
 import Results from "./pages/Results";
 import Dashboard from "./pages/Dashboard";
 import TestDetails from "./pages/TestDetails";
+import GroupDetails from "./pages/GroupDetails";
 import { useEffect } from "react";
 import { APP_TITLE } from "./const";
 
@@ -21,6 +22,7 @@ function Router() {
       <Route path={"/results/:testResultId"} component={Results} />
       <Route path={"/test-details/:testResultId"} component={TestDetails} />
       <Route path={"/dashboard"} component={Dashboard} />
+      <Route path={"/admin/groups/:groupId"} component={GroupDetails} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

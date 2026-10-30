@@ -5,12 +5,24 @@ const db = vi.hoisted(() => ({
   getTestResultWithAnswers: vi.fn(),
   getTestResultById: vi.fn(),
   getAllTestResults: vi.fn(),
+  getAdminParticipants: vi.fn(),
   saveTestResult: vi.fn(),
   saveTestAnswers: vi.fn(),
+  saveCompletedTest: vi.fn(),
   getScoringTable: vi.fn(),
   getUserNotifications: vi.fn(),
   markNotificationRead: vi.fn(),
   markAllNotificationsRead: vi.fn(),
+  getGroupsWithMemberCounts: vi.fn(),
+  getUserGroupMemberships: vi.fn(),
+  createGroup: vi.fn(),
+  renameGroup: vi.fn(),
+  deleteGroup: vi.fn(),
+  getGroupById: vi.fn(),
+  getGroupsByIds: vi.fn(),
+  setUserGroups: vi.fn(),
+  addUsersToGroup: vi.fn(),
+  getGroupMembersWithLatestResults: vi.fn(),
 }));
 
 const recalculation = vi.hoisted(() => ({
@@ -117,5 +129,19 @@ describe("sicurezza router BrainCode", () => {
       notificationsCreated: 0,
     });
     expect(recalculation.applyRecalculation).toHaveBeenCalledWith("hash-confermato");
+  });
+
+  it("riserva tutte le letture dei gruppi agli amministratori", async () => {
+    const regularCaller = appRouter.createCaller(createContext("user", "utente@example.com"));
+    await expect(regularCaller.admin.groups.list()).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(regularCaller.admin.groups.memberships()).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(regularCaller.admin.groups.summary({ groupId: "group-1" })).rejects.toMatchObject({ code: "FORBIDDEN" });
+    expect(db.getGroupsWithMemberCounts).not.toHaveBeenCalled();
+    expect(db.getUserGroupMemberships).not.toHaveBeenCalled();
+    expect(db.getGroupById).not.toHaveBeenCalled();
+
+    db.getGroupsWithMemberCounts.mockResolvedValue([{ id: "g1", name: "Eicon", slug: "eicon", memberCount: 0 }]);
+    const adminCaller = appRouter.createCaller(createContext("admin", "andrea.vaturi@gmail.com"));
+    await expect(adminCaller.admin.groups.list()).resolves.toHaveLength(1);
   });
 });

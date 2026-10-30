@@ -18,6 +18,7 @@ import { FileText, Download, RefreshCw } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import type { RecalculationPlan } from "../../../server/recalculation";
+import GroupsManagement from "./GroupsManagement";
 
 export default function AdminPanel() {
   const utils = trpc.useUtils();
@@ -247,6 +248,8 @@ export default function AdminPanel() {
             </Table>
           </div>
         )}
+
+        <GroupsManagement />
       </CardContent>
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
